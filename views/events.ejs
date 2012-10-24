@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Events for <%= cameraUUID %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
+  </head>
+  <body>
+	<script src="/bootstrap/js/bootstrap.min.js"></script>
+
+    <h1>Events for <%= cameraUUID %></h1>
+    
+    <table class='table'>
+        <% 
+          var reversed = eventInfos.slice().reverse();
+          reversed.forEach(function(eventInfo) { %>
+          <tr>
+            <td>
+            <%= renderTime(eventInfo.time) %>
+            </td>
+            <td>
+              <%- imageForTime(Number(eventInfo.time) - 2) %>
+              <%- imageForTime(Number(eventInfo.time)) %>
+              <%- imageForTime(Number(eventInfo.time) + 2) %>
+            </td>
+          </tr>
+        <% }) %>
+    </table>
+    
+  </body>
+</html>

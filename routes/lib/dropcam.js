@@ -1,12 +1,6 @@
 var https = require('https');
 var querystring = require('querystring');
 
-var loginCookie = null;
-
-exports.clearLoginCookie = function() {
-  loginCookie = null;
-}
-
 exports.getLoginCookie = function(loginParams, callback) {
 
   // Setup login request and send
@@ -23,7 +17,6 @@ exports.getLoginCookie = function(loginParams, callback) {
       
       var cookie = response.headers['set-cookie'];
       if (cookie) {
-        loginCookie = cookie;
         callback(cookie, null);
       }
       
@@ -52,7 +45,7 @@ function stringifyCookie(cookie) {
   return cookie;
 }
 
-exports.getEventsOnCamera = function(cameraUUID, callback) {
+exports.getEventsOnCamera = function(loginCookie, cameraUUID, callback) {
   // Setup login request and send
   var reqOptions = {
     hostname: 'nexusapi.dropcam.com',
@@ -84,6 +77,47 @@ exports.getEventsOnCamera = function(cameraUUID, callback) {
   });
   req.on('error', function(e) {
     console.error('getEventsOnCamera request error', e);
+    callback(null, e);
+  });
+  req.end();  
+}
+
+exports.getImage = function(loginCookie, cameraUUID, time, width, callback) {
+  console.log('getImage', loginCookie, cameraUUID, time, width);
+  // Setup login request and send
+  var reqOptions = {
+    hostname: 'nexusapi.dropcam.com',
+    path: '/get_image?' + querystring.stringify({ 
+      uuid: cameraUUID,
+      time: time,
+      width: width
+      }),
+    headers: {
+      'Cookie': stringifyCookie(loginCookie),      
+    },
+  };
+  var req = https.request(reqOptions, function(response) {
+      console.log('getImage response headers', response.headers);
+      
+      // Check response 
+      if (response.statusCode != 200) {
+        var e = new Error("HTTP status " + response.statusCode);
+        e.statusCode = response.statusCode;
+        callback(null, null, e);
+        return;
+      }
+      callback(response.headers, null, null);
+      
+      // Accumulate response
+      response.on('data', function(chunk) {
+        callback(null, chunk, null);
+      });
+      response.on('end', function() {
+        callback(null, null, null);
+      }); 
+  });
+  req.on('error', function(e) {
+    console.error('getImage request error', e);
     callback(null, e);
   });
   req.end();  
