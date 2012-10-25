@@ -45,15 +45,25 @@ function stringifyCookie(cookie) {
   return cookie;
 }
 
-exports.getEventsOnCamera = function(loginCookie, cameraUUID, callback) {
+exports.getEventsOnCamera = function(loginCookie, cameraUUID, start_time, end_time, callback) {
   // Setup login request and send
+  var params = {
+    uuid: cameraUUID,
+  };
+  if (start_time) {
+    params['start_time'] = start_time;
+  }
+  if (end_time) {
+    params['end_time'] = end_time;
+  }
   var reqOptions = {
     hostname: 'nexusapi.dropcam.com',
-    path: '/get_cuepoint?' + querystring.stringify({ uuid: cameraUUID }),
+    path: '/get_cuepoint?' + querystring.stringify(params),
     headers: {
       'Cookie': stringifyCookie(loginCookie),      
     },
   };
+  console.log('getEventsOnCamera reqOptions', reqOptions, params);
   var req = https.request(reqOptions, function(response) {
       console.log('getEventsOnCamera response headers', response.headers);
       
@@ -111,6 +121,9 @@ exports.getImage = function(loginCookie, cameraUUID, time, width, callback) {
       // Accumulate response
       response.on('data', function(chunk) {
         callback(null, chunk, null);
+      });
+      response.on('close', function(err) {
+        callback(null, null, err);
       });
       response.on('end', function() {
         callback(null, null, null);

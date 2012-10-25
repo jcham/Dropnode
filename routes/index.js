@@ -11,6 +11,7 @@ exports.index = function(req, res) {
   var username = 'joyceandjaime';
   var password = 'hsuandcham';
   var cameraUUID = '3687a9e2782d42d7ab23a1ebc3f7f714';
+  var num_days = 2;
 
   dropcam.getLoginCookie({ username:username, password:password }, function(cookie, err) {
     if (!cookie) {
@@ -23,7 +24,9 @@ exports.index = function(req, res) {
     req.session.loginCookie = cookie;
     
     // Request events
-    dropcam.getEventsOnCamera(cookie, cameraUUID, function(eventInfos, err) {
+    var end_time = (new Date).getTime() / 1000;
+    var start_time = end_time - (num_days * 24 * 60 * 60);
+    dropcam.getEventsOnCamera(cookie, cameraUUID, start_time, end_time, function(eventInfos, err) {
       if (!eventInfos) {
         console.error(err);
         return;
@@ -68,6 +71,7 @@ exports.get_image = function(req, res) {
                    req.query.width, 
     function(headers, chunk, error) { 
       if (error) {
+        console.error('error', error);
         if (error.statusCode) {
           res.statusCode = error.statusCode;
         }
@@ -76,15 +80,14 @@ exports.get_image = function(req, res) {
         }
       }
       else if (headers) {
-        console.log('headers', headers);
-        res.set('content-type', headers['content-type']);
+        res.set('content-type',   headers['content-type']);
         res.set('content-length', headers['content-length']);
       }
       else if (chunk) {
-        res.send(chunk);
+        res.write(chunk);
       }
       else {
-        res.send();
+        res.end();
       }
     });
 }
