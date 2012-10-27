@@ -1,31 +1,20 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Events for <%= cameraUUID %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <link rel='stylesheet' href='/bootstrap/css/bootstrap.min.css' />
-  </head>
-  <body>
-	<script src="/bootstrap/js/bootstrap.min.js"></script>
+<% include _header %>
+<% include _header_app %>
 
-    <h1>Events for <%= cameraUUID %></h1>
+  <h1>Events for <%= (camera && camera.name)? camera.name : "Camera" %></h1>
+  
+  <% var reversed = eventInfos.slice().reverse();
+     reversed.forEach(function(eventInfo) { %>
+    <div class="row-fluid event_row">
+      <div class="span3">
+        <%- renderTime(eventInfo.time) %>
+      </div>
+      <div class="span9">
+        <%- imageForTime(Number(eventInfo.time) - timeBracket) %>
+        <%- imageForTime(Number(eventInfo.time)) %>
+        <%- imageForTime(Number(eventInfo.time) + timeBracket) %>
+      </div>
+    </div>
+  <% }) %>
     
-    <table class='table'>
-        <% 
-          var reversed = eventInfos.slice().reverse();
-          reversed.forEach(function(eventInfo) { %>
-          <tr>
-            <td>
-            <%= renderTime(eventInfo.time) %>
-            </td>
-            <td>
-              <%- imageForTime(Number(eventInfo.time) - 2) %>
-              <%- imageForTime(Number(eventInfo.time)) %>
-              <%- imageForTime(Number(eventInfo.time) + 2) %>
-            </td>
-          </tr>
-        <% }) %>
-    </table>
-    
-  </body>
-</html>
+<% include _footer %>

@@ -1,0 +1,18 @@
+<% include _header %>
+<% include _header_app %>
+
+    <h1>Cameras</h1>
+    
+    <table class="table">
+      <% if (cameras) { cameras.forEach(function(camera) { %>
+        <tr>
+          <td>
+            <a href="/events/<%= camera.uuid %>">
+              <%= camera.name %>
+            </a>
+          </td>
+        </tr>
+      <% }); } %>
+    </table>
+    
+<% include _footer %>

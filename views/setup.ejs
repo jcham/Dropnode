@@ -1,0 +1,56 @@
+<% include _header %>
+<% include _header_app %>
+
+    <h1>Setup</h1>
+    
+    <% if (typeof message != 'undefined') { %>
+      <div class="row-fluid">
+        <div class="span12">
+          <div class="warning_box">
+            <%= message %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+    
+    <div class="row-fluid">
+      <div class="span12">
+      
+        <form class="form-horizontal" action="/setup" method="post">
+        
+          <div class="control-group">
+            <label class="control-label" for="textareaCameras">Cameras</label>
+            <div class="controls">
+              <textarea class="input-xxlarge" name="camerasText" id="textareaCameras" placeholder="" rows="4"
+                ><%= setup.camerasText %></textarea>
+              <span class="help-block">
+                Example:<br>
+                <pre>
+00UUIDString09802934023948234 &lt;<i>Title of camera</i>&gt;
+00UUIDString09802934023948234 &lt;<i>Title of another camera</i>&gt;</pre>
+              </span>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <label class="control-label">Timezone</label>
+            <div class="controls">
+              Name
+              <input type="text" class="input-mini" name="timezoneName" placeholder="e.g. PST"
+                value="<%= setup.timezoneName %>">
+              Offset (in hours)
+              <input type="text" class="input-mini" name="timezoneOffset"
+                value="<%= setup.timezoneOffset %>">
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <div class="controls">
+              <button type="submit" class="btn">Save</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+<% include _footer %>
