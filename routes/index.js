@@ -7,11 +7,12 @@ var dropcam = require('./lib/dropcam');
 var setuper = require('./lib/setuper');
 var moment = require('moment');
 
-var redis = require('redis'); 
-var redis_client = redis.createClient();
-redis_client.on('connect', function() {
-  console.log("REDIS CONNECTED");
-});
+// var redis = require('redis'); 
+// var redis_client = redis.createClient();
+// redis_client.on('connect', function() {
+//   console.log("REDIS CONNECTED");
+// });
+var redis_client = require('redis-url').connect(process.env.REDISTOGO_URL);
 
 // =========================================================================
 // Setup related
