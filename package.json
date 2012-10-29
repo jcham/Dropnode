@@ -5,9 +5,11 @@
   "scripts": {
     "start": "node app"
   },
-  "dependencies": {
+  "engines": {
     "node": "0.8.x",
-    "npm": "1.1.x",
+    "npm": "1.1.x"
+  },
+  "dependencies": {
     "express": "3.x",
     "stylus": "0.30.x",
     "ejs": "0.8.x",
