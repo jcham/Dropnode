@@ -67,20 +67,20 @@ exports.login = function(req, res) {
       req.session.loginUsername = username;
     
       // See if we can load up the setup
-      var setupS = redis_client.get("dropnode:setups:username=" + username);
-      if (setupS) {
-        try {
-          var setupNew = JSON.parse(setupS);
-          console.log("NEW SETUP:", setupNew);
-          setuper.writeToRequest(req, setupNew);
+      redis_client.get("dropnode:setups:username=" + username, function(err, setupS) {
+        if (setupS) {
+          try {
+            var setupNew = JSON.parse(setupS);
+            console.log("NEW SETUP O:", setupNew);
+            setuper.writeToRequest(req, setupNew);
+          }
+          catch(e) {
+            console.error("error reading setup", e);
+          }
         }
-        catch(e) {
-          console.error("error reading setup", e);
-        }
-      }
-    
-      // Redirect
-      res.redirect('/');
+        // Redirect
+        res.redirect('/');
+      });
     });
   }
 }
