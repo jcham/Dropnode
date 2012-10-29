@@ -54,7 +54,7 @@ app.all('/api/*',                 routes.api);
 // Generic error handling
 app.use(function(err, req, res, next) {
   console.error('**** ', err);
-  if (err.isDropcamAuthenticationError &&
+  if ((err.statusCode == 403 || err.statusCode == 401) &&
       req.headers['Accept'].match(/text\/html/)) {
     res.redirect('/login');
     return;

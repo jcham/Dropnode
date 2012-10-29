@@ -22,7 +22,7 @@
             <label class="control-label" for="textareaCameras">Cameras</label>
             <div class="controls">
               <textarea class="input-xxlarge" name="camerasText" id="textareaCameras" placeholder="" rows="4"
-                ><%= setup.camerasText %></textarea>
+                ><%= setup.camerasText ? setup.camerasText : '' %></textarea>
               <span class="help-block">
                 Example:<br>
                 <pre>
@@ -37,10 +37,10 @@
             <div class="controls">
               Name
               <input type="text" class="input-mini" name="timezoneName" placeholder="e.g. PST"
-                value="<%= setup.timezoneName %>">
+                value="<%= setup.timezoneName ? setup.timezoneName : '' %>">
               Offset (in hours)
               <input type="text" class="input-mini" name="timezoneOffset"
-                value="<%= setup.timezoneOffset %>">
+                value="<%= setup.timezoneOffset ? setup.timezoneOffset : '' %>">
             </div>
           </div>
           
