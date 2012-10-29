@@ -1,5 +1,5 @@
 .DS_Store
 public/stylesheets/*.css
-.node_modules
+node_modules
 redis/redis.log
 redis/dump.rdb
