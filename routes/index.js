@@ -202,23 +202,27 @@ exports.api = function(req, res, next) {
 exports.get_image = function(req, res, next) {
   
   // Get image parameters
-  dropcam.getImage(req.session.loginCookie, 
-                   req.query.uuid, 
-                   req.query.time, 
-                   req.query.width, 
-    function(headers, chunk, err) { 
-      if (err) {
-        next(err); return;
-      }
-      else if (headers) {
+  var dcreq = dropcam.requestImage(req.session.loginCookie, 
+                                   req.query.uuid, 
+                                   req.query.time, 
+                                   req.query.width,
+    function(response) {
+
+      res.statusCode = response.statusCode;
+      var headers = response.headers;
+      if (headers) {
         res.set('content-type',   headers['content-type']);
         res.set('content-length', headers['content-length']);
-      }
-      else if (chunk) {
+      };
+      response.on('data', function(chunk) {
         res.write(chunk);
-      }
-      else {
+      });
+      response.on('end', function() {
         res.end();
-      }
+      });
     });
+  dcreq.on('error', function(err) {
+    next(err);
+  });
+  dcreq.end();
 }

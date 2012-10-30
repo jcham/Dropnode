@@ -1,6 +1,10 @@
 var https = require('https');
 var querystring = require('querystring');
+var events = require('events');
 
+// Parameters:
+//  - callback: is `function(cookie, error)`
+//
 exports.getLoginCookie = function(loginParams, callback) {
 
   // Setup login request and send
@@ -28,6 +32,12 @@ exports.getLoginCookie = function(loginParams, callback) {
       });
       response.on('end', function() {
         console.log('getLoginCookie data', data);
+        
+        if (!cookie) {
+          var e = new Error("no cookie in response: " + data);
+          e.statusCode = response.statusCode;
+          callback(null, e);
+        }
       });
   });
   req.write(querystring.stringify(loginParams));
@@ -57,6 +67,9 @@ exports.getEventsOnCamera = function(loginCookie, cameraUUID, start_time, end_ti
   this.getJSON(loginCookie, '/get_cuepoint?' + querystring.stringify(params), callback);
 }
 
+// Parameters:
+//  - callback: is `function(parsedObject, error)`
+//
 exports.getJSON = function(loginCookie, path, callback) {
 
   // Setup HTTP headers
@@ -89,6 +102,7 @@ exports.getJSON = function(loginCookie, path, callback) {
         }
         catch (e) {
           console.error("error with data: ", e, data);
+          e.statusCode = response.statusCode;
           callback(null, e);
         }
       }); 
@@ -100,7 +114,12 @@ exports.getJSON = function(loginCookie, path, callback) {
   req.end();  
 }
 
-exports.getImage = function(loginCookie, cameraUUID, time, width, callback) {
+// Parameters:
+//  - callback: will get called with function(response).
+//
+// Return is an http.ClientRequest (don't forget to call .end()!).
+//
+exports.requestImage = function(loginCookie, cameraUUID, time, width, callback) {
   // console.log('getImage', loginCookie, cameraUUID, time, width);
 
   // Setup HTTP headers
@@ -119,26 +138,6 @@ exports.getImage = function(loginCookie, cameraUUID, time, width, callback) {
       }),
     headers: headers,
   };
-  var req = https.request(reqOptions, function(response) {
-      // console.log('getImage response headers', response.headers);
-
-      // Send headers
-      callback(response.headers, null, null);
-      
-      // Accumulate response
-      response.on('data', function(chunk) {
-        callback(null, chunk, null);
-      });
-      response.on('close', function(err) {
-        callback(null, null, err);
-      });
-      response.on('end', function() {
-        callback(null, null, null);
-      }); 
-  });
-  req.on('error', function(e) {
-    console.error('getImage request error', e);
-    callback(null, e);
-  });
-  req.end();  
+  var req = https.request(reqOptions, callback);
+  return req;
 }
